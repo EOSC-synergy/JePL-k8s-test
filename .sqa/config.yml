@@ -1,0 +1,40 @@
+config:
+  node_agent: 'docker_compose'
+  deploy_template: '.sqa/docker-compose.yml'
+  credentials:
+      - id: orviz-github-basic
+        username_var: GIT_USER
+        password_var: GIT_PASSWORD
+      - id: kubernetes-cluster
+        variable: KUBECONFIG
+
+sqa_criteria:
+  SvcQC.Dep:
+    repos:
+      kubectl:
+        container: kubectl
+        commands:
+          - |
+            #!/usr/bin/env bash
+            cat <<EOF >>/examples/kustomization.yaml
+            resources:
+              - mysql-deployment.yaml
+              - wordpress-deployment.yaml
+            EOF
+          - kubectl apply -k /examples
+          - |
+            #!/usr/bin/env bash
+            if ! kubectl rollout status deployment wordpress; then
+              kubectl rollout undo deployment wordpress
+              kubectl rollout status deployment wordpress
+              exit 1
+            fi
+
+#environment:
+  #JPL_DOCKERPUSH: "kubectl"
+  #JPL_IGNOREFAILURES: "defined"
+  #JPL_DOCKERFORCEBUILD: "enabled"
+  #JPL_WORKSPACEDEBUG: "true"
+  #JPL_WORKSPACEDEBUGTIMEOUT: 45
+
+#timeout: 1200
