@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   sphinx:
-    image: "docker pull bitnami/kubectl:1.23"
+    image: "bitnami/kubectl:1.23"
     container_name: "kubectl"
     hostname: "kubectl"
     volumes:
