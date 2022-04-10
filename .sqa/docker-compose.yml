@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  sphinx:
+  kubectl:
     image: "bitnami/kubectl:1.23"
     container_name: "kubectl"
     hostname: "kubectl"
