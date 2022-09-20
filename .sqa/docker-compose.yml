@@ -2,6 +2,10 @@ version: "3"
 
 services:
   kubectl:
+    environment:
+      - SSH_KEYFILE
+      - SSH_USER
+      - KUBECONFIG
     build:
       context: "./.sqa/"
       dockerfile: "./Dockerfile"
@@ -12,4 +16,7 @@ services:
     hostname: "kubectl"
     volumes:
      - ./:/examples
+     - "${SSH_KEYFILE}"
+     - "${KUBECONFIG}"
+
     entrypoint: [ sleep, infinity ]
