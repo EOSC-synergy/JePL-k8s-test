@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 BASTION_NODE="194.210.120.36"
 MASTER_NODE="10.0.0.67"
+mkdir -p ~/.ssh
 ssh-keyscan -H ${BASTION_NODE} > ~/.ssh/known_hosts
 chmod 600 ~/.ssh/known_hosts
 ssh -qND 6443 -i ${SSH_KEYFILE} -o ProxyCommand="ssh -i ${SSH_KEYFILE} -W %h:%p ${SSH_USER}@${BASTION_NODE}" ${SSH_USER}@${MASTER_NODE} &
