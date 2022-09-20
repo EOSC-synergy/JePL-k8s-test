@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+ssh -qND 6443 -i ${SSH_KEYFILE} -o ProxyCommand="ssh -i ${SSH_KEYFILE} -W %h:%p ${SSH_USER}@194.210.120.36" ${SSH_USER}@10.0.0.67 &
+SSH_PID="$!"
+kubectl apply -k /examples
+if ! kubectl rollout status deployment wordpress --timeout 3600s; then
+    echo "Someting went wrong!.. undo the current rollout and rollback to the previous revision."
+    kubectl rollout undo deployment wordpress
+    kubectl rollout status deployment wordpress
+    exit 1
+fi
+echo ""
+echo "### Deployment finished successfuly"
+echo ""
+kubectl describe -k /examples
+echo ""
+echo "### Delete the deployment"
+echo ""
+kubectl delete -k /examples

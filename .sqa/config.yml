@@ -20,16 +20,7 @@ sqa_criteria:
         container: kubectl
         commands:
           - /examples/scripts/create_kustomization
-          - |
-            #!/usr/bin/env bash
-            ssh -qND 6443 -i ${SSH_KEYFILE} -o ProxyCommand="ssh -i ${SSH_KEYFILE} -W %h:%p ${SSH_USER}@194.210.120.36" ${SSH_USER}@10.0.0.67 &
-            SSH_PID="$!"
-            kubectl apply -k /examples
-            if ! kubectl rollout status deployment wordpress --timeout 3600s; then
-              kubectl rollout undo deployment wordpress
-              kubectl rollout status deployment wordpress
-              exit 1
-            fi
+          - /examples/scripts/deploy_wordpress
 
 #environment:
   #JPL_DOCKERPUSH: "kubectl"
