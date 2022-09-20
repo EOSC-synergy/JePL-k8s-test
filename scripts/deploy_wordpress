@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-ssh -qND 6443 -i ${SSH_KEYFILE} -o ProxyCommand="ssh -i ${SSH_KEYFILE} -W %h:%p ${SSH_USER}@194.210.120.36" ${SSH_USER}@10.0.0.67 &
+BASTION_NODE="194.210.120.36"
+MASTER_NODE="10.0.0.67"
+ssh-keyscan -H ${BASTION_NODE} > ~/.ssh/known_hosts
+chmod 600 ~/.ssh/known_hosts
+ssh -qND 6443 -i ${SSH_KEYFILE} -o ProxyCommand="ssh -i ${SSH_KEYFILE} -W %h:%p ${SSH_USER}@${BASTION_NODE}" ${SSH_USER}@${MASTER_NODE} &
 SSH_PID="$!"
 kubectl apply -k /examples
 if ! kubectl rollout status deployment wordpress --timeout 3600s; then
