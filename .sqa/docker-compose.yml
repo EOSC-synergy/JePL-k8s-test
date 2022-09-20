@@ -2,6 +2,10 @@ version: "3"
 
 services:
   kubectl:
+    environment:
+      - KUBECONFIG
+      - SSH_KEYFILE
+      - SSH_USER
     build:
       context: "./.sqa/"
       dockerfile: "./Dockerfile"
@@ -12,5 +16,7 @@ services:
     hostname: "kubectl"
     volumes:
      - ./:/examples
+     - ~/.ssh/k8s_synergy_bot_rsa:/.sqa_secrets/ssh_key
+     - ~/.ssh/k8s-synergy-master.config:/.sqa_secrets/config
 
     entrypoint: [ sleep, infinity ]
