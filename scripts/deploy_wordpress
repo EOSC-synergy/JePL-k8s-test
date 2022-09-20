@@ -6,7 +6,7 @@ MASTER_NODE="10.0.0.67"
 #chmod 600 ~/.ssh/known_hosts
 #echo "#Debug SSH_KEYFILE: ${SSH_KEYFILE}"
 #echo "#Debug KUBECONFIG: ${KUBECONFIG}"
-ssh -qND 6443 -i ${SSH_KEYFILE} -o ProxyCommand="ssh -i ${SSH_KEYFILE} -W %h:%p ${SSH_USER}@${BASTION_NODE}" ${SSH_USER}@${MASTER_NODE} &
+ssh -qND 6443 -i ${SSH_KEYFILE} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -i ${SSH_KEYFILE} -W %h:%p ${SSH_USER}@${BASTION_NODE}" ${SSH_USER}@${MASTER_NODE} &
 SSH_PID="$!"
 kubectl apply -k /examples
 if ! kubectl rollout status deployment wordpress --timeout 3600s; then
