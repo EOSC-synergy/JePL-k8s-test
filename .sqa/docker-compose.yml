@@ -7,4 +7,4 @@ services:
     hostname: "kubectl"
     volumes:
      - ./:/examples
-    command: sleep infinity
+    entrypoint: [ sleep, infinity ]
