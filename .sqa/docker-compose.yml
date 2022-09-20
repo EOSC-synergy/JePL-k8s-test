@@ -5,8 +5,8 @@ services:
     build:
       context: "./.sqa/"
       dockerfile: "./Dockerfile"
-      cache_from:
-        - "bitnami/kubectl:1.23"
+      #cache_from:
+      #  - "bitnami/kubectl:1.23"
     image: "eosc-synergy/kubectl:1.23"
     container_name: "kubectl"
     hostname: "kubectl"
