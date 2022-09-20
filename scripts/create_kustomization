@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+cat <<EOF >>/examples/kustomization.yaml
+resources:
+    - mysql-deployment.yaml
+    - wordpress-deployment.yaml
+EOF
