@@ -22,7 +22,7 @@ sqa_criteria:
           - /examples/scripts/create_kustomization
           - /examples/scripts/deploy_wordpress
 
-#environment:
+environment:
   #JPL_DOCKERPUSH: "kubectl"
   #JPL_IGNOREFAILURES: "defined"
   #JPL_DOCKERFORCEBUILD: "enabled"
