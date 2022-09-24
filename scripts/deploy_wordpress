@@ -9,6 +9,7 @@ ssh-keyscan -H ${BASTION_NODE} > /root/.ssh/known_hosts
 chmod 600 /root/.ssh/known_hosts
 echo "Debug SSH_KEYFILE: ${SSH_KEYFILE}"
 echo "Debug KUBECONFIG: ${KUBECONFIG}"
+echo "Debug SSH_USER: ${SSH_USER}"
 
 echo ""
 echo "Open ssh socks tunnel to kubernetes master node"
@@ -21,7 +22,6 @@ if [[ "x${SSH_PID}" == "x" || "x${SSH_EXIT}" == "x" || ${SSH_EXIT} != 0 ]]; then
     exit 1;
 fi
 echo "ssh socks tunnel created with success:"
-netstat -ltpven
 
 echo ""
 echo "Test access to the kubernetes API"
@@ -38,7 +38,7 @@ echo ""
 echo "Deploy kubernetes infrastructure"
 echo ""
 kubectl --insecure-skip-tls-verify apply -k /examples
-if ! kubectl rollout status deployment wordpress --timeout 3600s; then
+if ! kubectl --insecure-skip-tls-verify rollout status deployment wordpress --timeout 300s; then
     echo "Someting went wrong!.. undo the current rollout and rollback to the previous revision."
     kubectl --insecure-skip-tls-verify rollout undo deployment wordpress
     kubectl --insecure-skip-tls-verify rollout status deployment wordpress

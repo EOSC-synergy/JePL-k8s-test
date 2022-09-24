@@ -2,10 +2,10 @@ version: "3"
 
 services:
   kubectl:
-    environment:
-      - KUBECONFIG
-      - SSH_KEYFILE
-      - SSH_USER
+    #environment:
+    #  - KUBECONFIG
+    #  - SSH_KEYFILE
+    #  - SSH_USER
     build:
       context: "./.sqa/"
       dockerfile: "./Dockerfile"
