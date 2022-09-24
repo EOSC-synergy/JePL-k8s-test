@@ -3,9 +3,10 @@ BASTION_NODE="194.210.120.36"
 MASTER_NODE="10.0.0.67"
 SOCKS_TUNNEL_PORT=38080
 K8S_API_PORT=6443
-#mkdir -p ~/.ssh
-#ssh-keyscan -H ${BASTION_NODE} > ~/.ssh/known_hosts
-#chmod 600 ~/.ssh/known_hosts
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+ssh-keyscan -H ${BASTION_NODE} > ~/.ssh/known_hosts
+chmod 600 ~/.ssh/known_hosts
 echo "Debug SSH_KEYFILE: ${SSH_KEYFILE}"
 echo "Debug KUBECONFIG: ${KUBECONFIG}"
 echo ""
@@ -18,14 +19,15 @@ if [[ "x${SSH_PID}" == "x" || "x${SSH_EXIT}" == "x" || ${SSH_EXIT} != 0 ]]; then
     echo "ssh socks tunnel failed with error code: ${SSH_EXIT}"
     exit 1;
 fi
+# Wait for socks tunnel to be ready
+sleep 3
 echo ""
 echo "Test access to the kubernetes API"
 echo ""
-https_proxy=socks5h://localhost:${SOCKS_TUNNEL_PORT} curl -k -v https://localhost:${K8S_API_PORT}/api
-K8S_API_EXIT="$?"
-if [[ "x${K8S_API_EXIT}" == "x" && ${K8S_API_EXIT} != 0 ]]; then
-    echo "curl to kubernetes api failed with error code: ${SSH_EXIT}"
-    kill -3 ${SSH_PID}
+K8S_API_STATUS_CODE=$(https_proxy=socks5h://localhost:${SOCKS_TUNNEL_PORT} curl -k -v --write-out %{http_code} --silent --output /dev/null https://localhost:${K8S_API_PORT}/api)
+if [[ "x${K8S_API_STATUS_CODE}" == "x" && ${K8S_API_STATUS_CODE} != 0 ]]; then
+    echo "curl to kubernetes api failed with error code: ${K8S_API_STATUS_CODE}"
+    kill ${SSH_PID}
     exit 1;
 fi
 echo ""
@@ -36,7 +38,7 @@ if ! kubectl rollout status deployment wordpress --timeout 3600s; then
     echo "Someting went wrong!.. undo the current rollout and rollback to the previous revision."
     kubectl --insecure-skip-tls-verify rollout undo deployment wordpress
     kubectl --insecure-skip-tls-verify rollout status deployment wordpress
-    kill -3 ${SSH_PID}
+    kill ${SSH_PID}
     exit 1
 fi
 echo ""
@@ -48,4 +50,4 @@ echo "### Delete the deployment"
 echo ""
 kubectl --insecure-skip-tls-verify delete -k /examples
 
-kill -3 ${SSH_PID}
+kill ${SSH_PID}
