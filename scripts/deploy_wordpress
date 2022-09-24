@@ -3,22 +3,26 @@ BASTION_NODE="194.210.120.36"
 MASTER_NODE="10.0.0.67"
 SOCKS_TUNNEL_PORT=38080
 K8S_API_PORT=6443
-mkdir -p ~/.ssh
-chmod 700 ~/.ssh
-ssh-keyscan -H ${BASTION_NODE} > ~/.ssh/known_hosts
-chmod 600 ~/.ssh/known_hosts
+mkdir -p /root/.ssh
+chmod 700 /root/.ssh
+ssh-keyscan -H ${BASTION_NODE} > /root/.ssh/known_hosts
+chmod 600 /root/.ssh/known_hosts
 echo "Debug SSH_KEYFILE: ${SSH_KEYFILE}"
 echo "Debug KUBECONFIG: ${KUBECONFIG}"
+
 echo ""
 echo "Open ssh socks tunnel to kubernetes master node"
 echo ""
-ssh -qND ${SOCKS_TUNNEL_PORT} -i ${SSH_KEYFILE} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -i ${SSH_KEYFILE} -W %h:%p ${SSH_USER}@${BASTION_NODE}" ${SSH_USER}@${MASTER_NODE} &
+ssh -qND ${SOCKS_TUNNEL_PORT} -i ${SSH_KEYFILE} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/root/.ssh/known_hosts -o ProxyCommand="ssh -i ${SSH_KEYFILE} -W %h:%p ${SSH_USER}@${BASTION_NODE}" ${SSH_USER}@${MASTER_NODE} &
 SSH_EXIT="$?"
 SSH_PID="$!"
 if [[ "x${SSH_PID}" == "x" || "x${SSH_EXIT}" == "x" || ${SSH_EXIT} != 0 ]]; then
     echo "ssh socks tunnel failed with error code: ${SSH_EXIT}"
     exit 1;
 fi
+echo "ssh socks tunnel created with success:"
+netstat -ltpven
+
 echo ""
 echo "Test access to the kubernetes API"
 echo ""
@@ -29,6 +33,7 @@ if [[ "x${K8S_API_STATUS_CODE}" == "x" || ${K8S_API_STATUS_CODE} != 403 ]]; then
     kill ${SSH_PID}
     exit 1;
 fi
+
 echo ""
 echo "Deploy kubernetes infrastructure"
 echo ""
@@ -40,10 +45,12 @@ if ! kubectl rollout status deployment wordpress --timeout 3600s; then
     kill ${SSH_PID}
     exit 1
 fi
+
 echo ""
 echo "### Deployment finished successfuly"
 echo ""
 kubectl --insecure-skip-tls-verify describe -k /examples
+
 echo ""
 echo "### Delete the deployment"
 echo ""
