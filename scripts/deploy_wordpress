@@ -19,13 +19,12 @@ if [[ "x${SSH_PID}" == "x" || "x${SSH_EXIT}" == "x" || ${SSH_EXIT} != 0 ]]; then
     echo "ssh socks tunnel failed with error code: ${SSH_EXIT}"
     exit 1;
 fi
-# Wait for socks tunnel to be ready
-sleep 3
 echo ""
 echo "Test access to the kubernetes API"
 echo ""
+sleep 5
 K8S_API_STATUS_CODE=$(https_proxy=socks5h://localhost:${SOCKS_TUNNEL_PORT} curl -k -v --write-out %{http_code} --silent --output /dev/null https://localhost:${K8S_API_PORT}/api)
-if [[ "x${K8S_API_STATUS_CODE}" == "x" && ${K8S_API_STATUS_CODE} != 0 ]]; then
+if [[ "x${K8S_API_STATUS_CODE}" == "x" || ${K8S_API_STATUS_CODE} != 403 ]]; then
     echo "curl to kubernetes api failed with error code: ${K8S_API_STATUS_CODE}"
     kill ${SSH_PID}
     exit 1;
