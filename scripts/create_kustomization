@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 
 cat <<EOF >>/examples/kustomization.yaml
+secretGenerator:
+- name: mysql-pass
+  literals:
+  - password=YOUR_PASSWORD
+
 resources:
-    - mysql-deployment.yaml
-    - wordpress-deployment.yaml
+    - mysql-wordpress-pd/mysql-deployment.yaml
+    - mysql-wordpress-pd/wordpress-deployment.yaml
+
 EOF
