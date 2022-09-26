@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
-BASTION_NODE="194.210.120.36"
-MASTER_NODE="10.0.0.67"
-SOCKS_TUNNEL_PORT=38080
-K8S_API_PORT=6443
+
 mkdir -p /root/.ssh
 chmod 700 /root/.ssh
 ssh-keyscan -H ${BASTION_NODE} > /root/.ssh/known_hosts
@@ -35,10 +32,11 @@ echo ""
 echo "Deploy kubernetes infrastructure"
 echo ""
 kubectl --insecure-skip-tls-verify apply -k /examples
-if ! kubectl --insecure-skip-tls-verify rollout status deployment wordpress --timeout 300s; then
+if ! kubectl --insecure-skip-tls-verify rollout status deployment wordpress --timeout ${KUBECTL_ROLLOUT_TIMEOUT}; then
     echo "Someting went wrong!.. undo the current rollout and rollback to the previous revision."
     kubectl --insecure-skip-tls-verify rollout undo deployment wordpress
-    kubectl --insecure-skip-tls-verify rollout status deployment wordpress
+    kubectl --insecure-skip-tls-verify rollout status deployment wordpress --timeout ${KUBECTL_ROLLOUT_TIMEOUT}
+    kubectl --insecure-skip-tls-verify delete -k /examples
     kill ${SSH_PID}
     exit 1
 fi

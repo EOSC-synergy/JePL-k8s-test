@@ -2,10 +2,10 @@ version: "3"
 
 services:
   kubectl:
-    #environment:
-    #  - KUBECONFIG
-    #  - SSH_KEYFILE
-    #  - SSH_USER
+    environment:
+      - SOCKS_TUNNEL_PORT
+      - K8S_API_PORT
+      - KUBECTL_ROLLOUT_TIMEOUT
     build:
       context: "./.sqa/"
       dockerfile: "./Dockerfile"

@@ -4,7 +4,7 @@ cat <<EOF >>/examples/kustomization.yaml
 secretGenerator:
 - name: mysql-pass
   literals:
-  - password=YOUR_PASSWORD
+  - password="${GIT_PASSWORD}"
 
 resources:
     - mysql-wordpress-pd/mysql-deployment.yaml

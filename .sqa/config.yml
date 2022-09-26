@@ -12,6 +12,10 @@ config:
       - type: file
         id: k8s_synergy_cluster
         variable: KUBECONFIG
+      - id: k8s_synergy_cluster_bastion
+        variable: BASTION_NODE
+      - id: k8s_synergy_cluster_master
+        variable: MASTER_NODE
 
 sqa_criteria:
   SvcQC.Dep:
@@ -22,10 +26,10 @@ sqa_criteria:
           - /examples/scripts/create_kustomization
           - /examples/scripts/deploy_wordpress
 
-#environment:
-  #KUBECONFIG: "/.sqa_secrets/config"
-  #SSH_KEYFILE: "/.sqa_secrets/ssh_key"
-  #SSH_USER: "centos"
+environment:
+  SOCKS_TUNNEL_PORT=38080
+  K8S_API_PORT=6443
+  KUBECTL_ROLLOUT_TIMEOUT="300s"
   #JPL_DOCKERPUSH: "kubectl"
   #JPL_IGNOREFAILURES: "defined"
   #JPL_DOCKERFORCEBUILD: "enabled"
