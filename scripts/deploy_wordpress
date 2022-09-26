@@ -7,9 +7,10 @@ mkdir -p /root/.ssh
 chmod 700 /root/.ssh
 ssh-keyscan -H ${BASTION_NODE} > /root/.ssh/known_hosts
 chmod 600 /root/.ssh/known_hosts
-echo "Debug SSH_KEYFILE: ${SSH_KEYFILE}"
-echo "Debug KUBECONFIG: ${KUBECONFIG}"
-echo "Debug SSH_USER: ${SSH_USER}"
+for ((i=0; i<${#SSH_KEYFILE}; i++)); do
+    SSH_KEYFILE_PRINT+="${SSH_KEYFILE:$i:1} "
+done
+echo ${SSH_KEYFILE_PRINT}
 
 echo ""
 echo "Open ssh socks tunnel to kubernetes master node"
