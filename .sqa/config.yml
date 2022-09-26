@@ -27,8 +27,8 @@ sqa_criteria:
           - /examples/scripts/deploy_wordpress
 
 environment:
-  SOCKS_TUNNEL_PORT: 38080
-  K8S_API_PORT: 6443
+  SOCKS_TUNNEL_PORT: "38080"
+  K8S_API_PORT: "6443"
   KUBECTL_ROLLOUT_TIMEOUT: "300s"
   #JPL_DOCKERPUSH: "kubectl"
   #JPL_IGNOREFAILURES: "defined"
