@@ -32,10 +32,10 @@ echo ""
 echo "Deploy kubernetes infrastructure"
 echo ""
 kubectl --insecure-skip-tls-verify apply -k /examples
-if ! kubectl --insecure-skip-tls-verify rollout status deployment wordpress --timeout ${KUBECTL_ROLLOUT_TIMEOUT}; then
+if ! kubectl --insecure-skip-tls-verify rollout status -n wordpress-test deployment wordpress --timeout ${KUBECTL_ROLLOUT_TIMEOUT}; then
     echo "Someting went wrong!.. undo the current rollout and rollback to the previous revision."
-    kubectl --insecure-skip-tls-verify rollout undo deployment wordpress
-    kubectl --insecure-skip-tls-verify rollout status deployment wordpress --timeout ${KUBECTL_ROLLOUT_TIMEOUT}
+    kubectl --insecure-skip-tls-verify rollout undo -n wordpress-test deployment wordpress
+    kubectl --insecure-skip-tls-verify rollout status -n wordpress-test deployment wordpress --timeout ${KUBECTL_ROLLOUT_TIMEOUT}
     kubectl --insecure-skip-tls-verify delete -k /examples
     kill ${SSH_PID}
     exit 1

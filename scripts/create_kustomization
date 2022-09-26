@@ -1,13 +1,23 @@
 #!/usr/bin/env bash
 
-cat <<EOF >>/examples/kustomization.yaml
+cat <<EOF >/examples/mysql-wordpress-pd/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: wordpress-test
+
+EOF
+
+cat <<EOF >/examples/kustomization.yaml
 secretGenerator:
 - name: mysql-pass
   literals:
   - password="${GIT_PASSWORD}"
 
 resources:
-    - mysql-wordpress-pd/mysql-deployment.yaml
-    - mysql-wordpress-pd/wordpress-deployment.yaml
+  - mysql-wordpress-pd/namespace.yaml
+  - mysql-wordpress-pd/mysql-deployment.yaml
+  - mysql-wordpress-pd/wordpress-deployment.yaml
+namespace: wordpress-test
 
 EOF
